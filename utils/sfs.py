@@ -9,12 +9,17 @@ def count_(df: pd.DataFrame):
     data_counts = [count_score(df[c]) for c in df.columns]
     return pd.Series(data=data_counts, index=df.columns)
 
+def not_nan_values(series:pd.Series): ## pandas series with unique indexes with column = name
+
+    valid_values = [x for x in series if not math.isnan(x)]
+    return valid_values
+
 
 def max_(df: pd.DataFrame):
 
     data_counts = []
     for c in df.columns:
-        valid_values = [x for x in df[c] if not math.isnan(x)]
+        valid_values = not_nan_values(df[c])
         data_counts.append(max(valid_values) if valid_values else None)
     return pd.Series(data=data_counts, index=df.columns)
 
@@ -23,7 +28,7 @@ def min_(df: pd.DataFrame):
 
     data_counts = []
     for c in df.columns:
-        valid_values = [x for x in df[c] if not math.isnan(x)]
+        valid_values = not_nan_values(df[c])
         data_counts.append(min(valid_values) if valid_values else None)
     return pd.Series(data=data_counts, index=df.columns)
 
@@ -31,10 +36,11 @@ def min_(df: pd.DataFrame):
 def mean_(df: pd.DataFrame):
     data_counts = []
     for c in df.columns:
-        values = [x for x in df[c] if not math.isnan(x)]
+        values = not_nan_values(df[c])
         mean_val = sum(values) / len(values) if values else None
         data_counts.append(mean_val)
     return pd.Series(data=data_counts, index=df.columns)
+
 
 def std_(df: pd.DataFrame):
 
@@ -42,7 +48,7 @@ def std_(df: pd.DataFrame):
     data_counts = []
 
     for c in df.columns:
-        values = [x for x in df[c] if not math.isnan(x)]
+        values = not_nan_values(df[c])
         n = len(values)
         if n == 0:
             data_counts.append(None)
@@ -61,7 +67,7 @@ def quantile_(df: pd.DataFrame, percent=0.25):
     data_quantiles = []
 
     for c in df.columns:
-        col = [x for x in df[c] if not math.isnan(x)]
+        col = not_nan_values(df[c])
         col.sort()
         n = len(col)
 
@@ -69,7 +75,7 @@ def quantile_(df: pd.DataFrame, percent=0.25):
             data_quantiles.append(None)
             continue
 
-        pos = percent * (n - 1)
+        pos   = percent * (n - 1)
         lower = math.floor(pos)
         upper = math.ceil(pos)
 
@@ -81,37 +87,34 @@ def quantile_(df: pd.DataFrame, percent=0.25):
 
     return pd.Series(data=data_quantiles, index=df.columns)
 
-def mean_series(serie):
 
-    values = [x for x in serie if not math.isnan(x)]
+def mean_series(series: pd.Series):
+
+    values = not_nan_values(series)
     return sum(values) / len(values)
 
+def variance_series(series):
+    values = not_nan_values(series)
 
-def variance_(df: pd.DataFrame, sample: bool = True):
-    means = mean_(df)
-    variances = []
 
-    for c in df.columns:
-        values = [x for x in df[c] if pd.notna(x)]
-        n = len(values)
 
-        if n == 0 or (sample and n == 1):
-            variances.append(None)
-            continue
 
-        denom = n - 1 if sample else n
-        variance = sum((x - means[c]) ** 2 for x in values) / denom
-        variances.append(variance)
 
-    return pd.Series(data=variances, index=df.columns)
+
+def variance_(df: pd.DataFrame):
+    std_series = std_(df)
+    return std_series ** 2
+
 
 def mode_(df: pd.DataFrame):
     
-    modes = list()
+    modes = []
     for c in df.columns:
+
+        valid = not_nan_values(df[c])
+        
         pass
         
-
 
 def correlation_(x, y):
     # Compute means
@@ -132,3 +135,13 @@ def correlation_(x, y):
     denom = math.sqrt(x_denom * y_denom)
 
     return num / denom if denom != 0 else 0
+
+
+def range_(df:pd.DataFrame):
+    return max_(df) - min_(df)
+
+
+def cv_(df : pd.DataFrame):
+    return std_(df) / mean_(df)
+
+
