@@ -27,7 +27,7 @@ class TestSimpleImputer(unittest.TestCase):
         ...
 
     def test_invalid_strategy(self):
-       with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError):
             invalid_imputer = SimpleImputer(strategy='invalid')
             invalid_imputer.fit(self.data)
 

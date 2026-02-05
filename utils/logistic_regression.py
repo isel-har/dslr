@@ -4,15 +4,40 @@ import numpy as np
 
 class LogisticRegression:
 
-    def __init__(self, lr=0.1, n_iters = 100, method='BGD', verbose=0, random_state=42, epsilon=1e-4, n_jobs=None):
+    def __init__(
+        self,
+        lr: float = 0.01,
+        n_iters: int = 1000,
+        batch_size: int | None = None,
+        optimizer: str | None = None,
+        penalty: str | None = None,
+        random_seed: int = 42,
+        early_stoping = False,
+        patience: int = 10,
+        verbose: bool = False,
+        epsilon: float = 1e-4,
+        ):
+
         self.lr = lr
+        self.n_iters = n_iters
+        self.batch_size = batch_size
+        self.optimizer = optimizer
+
+        self.penalty = penalty
+        self.early_stopping = early_stopping
+        self.tol = tol
+        self.patience = patience
+        self.verbose = verbose
         self.W  = None
         self.b  = None
-        self.n_iters = n_iters
     
     def _sigmoid(self, z):
+        #TODO maybe a clamp here to prevent overflow
         return 1 / (1 + np.exp(-z))
-    
+
+    def _loss(self, y, y_pred):
+      ...
+
     def farward(self, X):
         return self._sigmoid(np.dot(X, self.W) + self.b)
 
@@ -29,31 +54,4 @@ class LogisticRegression:
     def score(self, X, y):
         #TODO return the mean accuracy score of self.predict() w.r.t. y
         ...
-
-#TODO Running the classifiers on parallel - some error checks - 
-class OneVsRestClassifier:
-
-    def __init__(self, estimator, *, n_jobs=None, verbose=0):
-        self.classes_ =  None
-        self.models  = []
-        ...
-
-    def fit(self, X, y):
-        self.classes = np.unique(y)
-        self.models_ = []
-
-        for c in self.classes_:
-            y_bin = (y == c).astype(int)
-
-            model = LogisticRegression()
-            model.fit(X, y_bin)
-            self.models.append(model)
-        
-        return self
-        
-    def predict_probabilities(self): #TODO iterate over all the models and run predict()
-
-    def predict(self, X): #TODO return the name of the class with highest probability self.classes_[np.argmaxy(_pred, axis=1)] 
-        ...
-
 
