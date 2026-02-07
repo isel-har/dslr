@@ -22,7 +22,6 @@
   - [ ] Optimizations: adam, RMSProp, Momentum
   - [ ] early stoping
   - [ ] Tests
-  - [ ] Animation?
 
 - *Classifier*
   - [ ] OneVsRestClassifier
@@ -30,6 +29,8 @@
 
 - Misc
   - [x] add a linter/formater (ruff)
+  - [ ] Pralell execuution of each classifier
+  - [ ] training animation: plot for each class (loss per epoch) in real time ?
 
 ## Resources
 - [what is Exploratory Data Analysis - IBM](https://www.youtube.com/watch?v=QiqZliDXCCg)

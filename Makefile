@@ -7,7 +7,7 @@ clean:
 	find . -type d -name "__pycache__" -delete
 
 test:
-	python -m unittest discover -s tests
+	python -m unittest discover -s tests -v
 
 lint:
 	ruff check --fix
