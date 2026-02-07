@@ -1,15 +1,20 @@
 import pandas as pd
 import math
 
+
 def count_score(scores):
     return sum(not math.isnan(x) for x in scores if x is not None)
+
 
 def count_(df: pd.DataFrame):
 
     data_counts = [count_score(df[c]) for c in df.columns]
     return pd.Series(data=data_counts, index=df.columns)
 
-def not_nan_values(series:pd.Series): ## pandas series with unique indexes with column = name
+
+def not_nan_values(
+    series: pd.Series,
+):  ## pandas series with unique indexes with column = name
 
     valid_values = [x for x in series if not math.isnan(x)]
     return valid_values
@@ -75,14 +80,14 @@ def quantile_(df: pd.DataFrame, percent=0.25):
             data_quantiles.append(None)
             continue
 
-        pos   = percent * (n - 1)
+        pos = percent * (n - 1)
         lower = math.floor(pos)
         upper = math.ceil(pos)
 
         if lower == upper:
             q = col[int(pos)]
         else:
-            q = col[lower] + (col[upper] - col[lower]) * (pos - lower) ## to understand
+            q = col[lower] + (col[upper] - col[lower]) * (pos - lower)  ## to understand
         data_quantiles.append(q)
 
     return pd.Series(data=data_quantiles, index=df.columns)
@@ -93,34 +98,30 @@ def mean_series(series: pd.Series):
     values = not_nan_values(series)
     return sum(values) / len(values)
 
+
 def variance_series(series):
     values = not_nan_values(series)
 
 
-
-
-
-
 def variance_(df: pd.DataFrame):
     std_series = std_(df)
-    return std_series ** 2
+    return std_series**2
 
 
 def mode_(df: pd.DataFrame):
-    
+
     modes = []
     for c in df.columns:
-
         valid = not_nan_values(df[c])
-        
+
         pass
-        
+
 
 def correlation_(x, y):
     # Compute means
     x_h = mean_series(x)
     y_h = mean_series(y)
-    
+
     # Numerator: sum of products of deviations
     num = sum(
         (a - x_h) * (b - y_h)
@@ -129,19 +130,17 @@ def correlation_(x, y):
     )
 
     # Denominator: product of standard deviations (not means)
-    x_denom = sum((a - x_h)**2 for a in x if not math.isnan(a))
-    y_denom = sum((b - y_h)**2 for b in y if not math.isnan(b))
+    x_denom = sum((a - x_h) ** 2 for a in x if not math.isnan(a))
+    y_denom = sum((b - y_h) ** 2 for b in y if not math.isnan(b))
 
     denom = math.sqrt(x_denom * y_denom)
 
     return num / denom if denom != 0 else 0
 
 
-def range_(df:pd.DataFrame):
+def range_(df: pd.DataFrame):
     return max_(df) - min_(df)
 
 
-def cv_(df : pd.DataFrame):
+def cv_(df: pd.DataFrame):
     return std_(df) / mean_(df)
-
-

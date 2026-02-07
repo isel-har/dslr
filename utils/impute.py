@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class SimpleImputer:
     """Replace missing values (np.nan) using simple strategies.
 
@@ -15,7 +16,7 @@ class SimpleImputer:
     fill_value: float, default: 0
       When strategy == "constant", `fill_value` is used to replace all occurrences of missing_values.
 
-    copy: bool, default=True 
+    copy: bool, default=True
       If True, a copy of X will be created. If False, imputation will be done in-place.
 
     Attrs:
@@ -24,7 +25,7 @@ class SimpleImputer:
       The imputation fill value for each feature.
     """
 
-    def __init__(self, strategy="mean", fill_value=0., copy=True):
+    def __init__(self, strategy="mean", fill_value=0.0, copy=True):
         self.strategy = strategy
         self.fill_value = fill_value
         self.copy = copy
@@ -71,7 +72,6 @@ class SimpleImputer:
         X = np.array(X, dtype=float, copy=self.copy)
 
         for col in range(X.shape[1]):
-
             missing_mask = np.isnan(X[:, col])
             X[missing_mask, col] = self.statistics_[col]
 
@@ -83,7 +83,6 @@ class SimpleImputer:
 
 
 class KNNImputer:
-
     def __init__(self, n_neighbors=5, weights="uniform", copy=True):
         self.n_neighbors = n_neighbors
         self.weights = weights
@@ -95,7 +94,7 @@ class KNNImputer:
         if np.sum(mask) == 0:
             return np.inf
         diff = x[mask] - y[mask]
-        return np.sqrt(np.sum(diff ** 2))
+        return np.sqrt(np.sum(diff**2))
 
     def fit(self, X):
         X = np.array(X, dtype=float)
@@ -127,7 +126,7 @@ class KNNImputer:
                 if len(neighbors) == 0:
                     continue
                 neighbors.sort(key=lambda x: x[0])
-                k_nearest = neighbors[:self.n_neighbors]
+                k_nearest = neighbors[: self.n_neighbors]
                 distances = np.array([d for d, _ in k_nearest])
                 values = np.array([v for _, v in k_nearest])
 
@@ -147,4 +146,3 @@ class KNNImputer:
 
         self.fit(X)
         return self.transform(X)
-

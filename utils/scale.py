@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class MinMaxScaler:
     """ """
 
@@ -26,13 +27,14 @@ class MinMaxScaler:
         X = (X - self.feature_range[0]) * scale + self.data_min_
         return X
 
+
 class StandardScaler:
     """ """
 
     def __init__(self, *, with_mean=True, with_std=True, copy=True):
-      self.with_mean = with_mean
-      self.with_std = with_std
-      self.copy = copy
+        self.with_mean = with_mean
+        self.with_std = with_std
+        self.copy = copy
 
     def fit(self, X):
         X = np.asarray(X)
@@ -54,16 +56,24 @@ class StandardScaler:
             X = X * self.scale_
         if self.with_mean:
             X = X + self.mean_
-        return 
+        return X
+
 
 class RobustScaler:
     """ """
 
-    def __init__(self, *, with_centering=True, with_scaling=True, quantile_range=(25.0, 75.0), copy=True):
-      self.with_centering = with_centering
-      self.with_scaling = with_scaling
-      self.quantile_range = quantile_range
-      self.copy = copy
+    def __init__(
+        self,
+        *,
+        with_centering=True,
+        with_scaling=True,
+        quantile_range=(25.0, 75.0),
+        copy=True,
+    ):
+        self.with_centering = with_centering
+        self.with_scaling = with_scaling
+        self.quantile_range = quantile_range
+        self.copy = copy
 
     def fit(self, X):
         X = np.asarray(X)
@@ -89,5 +99,3 @@ class RobustScaler:
         if self.with_centering:
             X = X + self.center_
         return X
-
-

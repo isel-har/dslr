@@ -9,5 +9,11 @@ clean:
 test:
 	python -m unittest discover -s tests
 
+lint:
+	ruff check --fix
+
+format:
+	ruff format 
+
 
 .PHONY: clean test

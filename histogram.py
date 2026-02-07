@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 
+
 def main():
     if len(sys.argv) != 2:
         return
@@ -10,7 +11,7 @@ def main():
     try:
         df = pd.read_csv(sys.argv[1])
 
-        numeric_cols = df.select_dtypes(include='number').columns
+        numeric_cols = df.select_dtypes(include="number").columns
         groups = df.groupby("Hogwarts House")[numeric_cols].agg(mean_series)
 
         # print(groups)
@@ -32,5 +33,7 @@ def main():
         plt.show()
     except Exception as e:
         print("exception:", str(e))
+
+
 if __name__ == "__main__":
     main()

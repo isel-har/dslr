@@ -5,11 +5,12 @@ import sys
 
 
 def main():
-    if len(sys.argv) != 2: return
+    if len(sys.argv) != 2:
+        return
 
     try:
         df = pd.read_csv(sys.argv[1])
-        numeric_df = df.select_dtypes(include='number')
+        numeric_df = df.select_dtypes(include="number")
         columns = numeric_df.columns.to_list()
 
         max_cor = 0
@@ -21,12 +22,13 @@ def main():
                 x_vals = numeric_df[columns[i]].to_list()
                 y_vals = numeric_df[columns[j]].to_list()
                 cor = correlation_(x_vals, y_vals)
-                
-                if abs(cor) > abs(max_cor):  # consider absolute value for strongest correlation
+
+                if abs(cor) > abs(
+                    max_cor
+                ):  # consider absolute value for strongest correlation
                     max_cor = cor
                     score_x = columns[i]
                     score_y = columns[j]
-
 
         plt.scatter(numeric_df[score_x], numeric_df[score_y], color="orange")
         plt.xlabel(score_x)
@@ -35,6 +37,7 @@ def main():
         plt.show()
     except Exception as e:
         print("exception:", str(e))
+
 
 if __name__ == "__main__":
     main()

@@ -15,7 +15,7 @@ class LogisticRegression:
         early_stoping = False,
         patience: int = 10,
         verbose: bool = False,
-        epsilon: float = 1e-4,
+        epsilon: float = 1e-9,
         ):
 
         self.lr = lr
@@ -36,7 +36,7 @@ class LogisticRegression:
         return 1 / (1 + np.exp(-z))
 
     def _loss(self, y, y_pred):
-      ...
+      
 
     def farward(self, X):
         return self._sigmoid(np.dot(X, self.W) + self.b)

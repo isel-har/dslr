@@ -7,13 +7,13 @@
   - [x] SimpleImputer
   - [x] KNNImputer
   - [ ] some other imputer? (univariate)
-  - [ ] Tests
+  - [x] Tests
 
 - *Scalers*
   - [x] MinMaxScaler
   - [x] StandardScaler
   - [x] RobustScaler
-  - [ ] Tests
+  - [x] Tests
 
 - *Logistic regression*
   - [ ] LogisticRegression
@@ -21,16 +21,15 @@
   - [ ] L1 - L2 regularization
   - [ ] Optimizations: adam, RMSProp, Momentum
   - [ ] early stoping
-  - [ ] Animation?
   - [ ] Tests
+  - [ ] Animation?
 
 - *Classifier*
   - [ ] OneVsRestClassifier
   - [ ] Tests
 
 - Misc
- - [ ] add a linter/formater (something like ruff...)
- - [ ] maybe uv
+  - [x] add a linter/formater (ruff)
 
 ## Resources
 - [what is Exploratory Data Analysis - IBM](https://www.youtube.com/watch?v=QiqZliDXCCg)

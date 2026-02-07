@@ -1,5 +1,8 @@
 import unittest
-import numpy as np
-from utils.one_vs_Rest_classifier import OneVsRestClassifier
 
-class TestOneVsRestClassifier(unittest.TestCase):...
+
+class TestOneVsRestClassifier(unittest.TestCase):
+    def setUp(self): ...
+    def test_fit(self): ...
+
+    # TODO just test the classes incoding and the attributes

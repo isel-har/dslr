@@ -1,16 +1,11 @@
-
 import unittest
 import numpy as np
-from utils.impute import SimpleImputer, KNNImputer 
+from utils.impute import SimpleImputer, KNNImputer
+
 
 class TestSimpleImputer(unittest.TestCase):
-
     def setUp(self):
-        self.X = np.array([
-            [1, np.nan, 3],
-            [2, 5, np.nan],
-            [np.nan, 7, 9]
-        ], dtype=float)
+        self.X = np.array([[1, np.nan, 3], [2, 5, np.nan], [np.nan, 7, 9]], dtype=float)
 
     def test_fit_mean(self):
         imputer = SimpleImputer(strategy="mean")
@@ -27,12 +22,7 @@ class TestSimpleImputer(unittest.TestCase):
         np.testing.assert_allclose(imputer.statistics_, expected)
 
     def test_fit_most_frequent(self):
-        X = np.array([
-            [1, np.nan],
-            [1, 5],
-            [2, 5],
-            [1, np.nan]
-        ])
+        X = np.array([[1, np.nan], [1, 5], [2, 5], [1, np.nan]])
 
         imputer = SimpleImputer(strategy="most_frequent")
         imputer.fit(X)
@@ -73,10 +63,7 @@ class TestSimpleImputer(unittest.TestCase):
         self.assertEqual(id(X), X_id)
 
     def test_column_all_nan(self):
-        X = np.array([
-            [np.nan, 1],
-            [np.nan, 2]
-        ])
+        X = np.array([[np.nan, 1], [np.nan, 2]])
 
         imputer = SimpleImputer(strategy="mean")
         imputer.fit(X)
@@ -84,11 +71,11 @@ class TestSimpleImputer(unittest.TestCase):
         self.assertTrue(np.isnan(imputer.statistics_[0]))
 
 
-
 class TestKNNImputer(unittest.TestCase):
-
     def setUp(self):
-        self.X = np.array([[1, 2, np.nan], [3, 4, 3], [np.nan, 6, 5], [8, 8, 7]], dtype=float)
+        self.X = np.array(
+            [[1, 2, np.nan], [3, 4, 3], [np.nan, 6, 5], [8, 8, 7]], dtype=float
+        )
 
     def test_fit(self):
         imputer = KNNImputer()
@@ -117,17 +104,20 @@ class TestKNNImputer(unittest.TestCase):
     def test_transform_uniform(self):
         imputer = KNNImputer(n_neighbors=2, weights="uniform")
         X_t = imputer.fit_transform(self.X)
-        expected = np.array([[1, 2, 4], [3, 4, 3], [5.5, 6, 5], [8., 8., 7.]], dtype=float)
+        expected = np.array(
+            [[1, 2, 4], [3, 4, 3], [5.5, 6, 5], [8.0, 8.0, 7.0]], dtype=float
+        )
         np.testing.assert_allclose(X_t, expected)
 
     def test_transform_distance(self):
         imputer = KNNImputer(n_neighbors=2, weights="distance")
         X_t = imputer.fit_transform(self.X)
 
-        expected = np.array([[1, 2, 3.8284271], [3, 4, 3], [5.5, 6, 5], [8., 8., 7.]], dtype=float)
+        expected = np.array(
+            [[1, 2, 3.8284271], [3, 4, 3], [5.5, 6, 5], [8.0, 8.0, 7.0]], dtype=float
+        )
         np.testing.assert_allclose(X_t, expected)
         # self.assertFalse(np.isnan(X_t).any())
-
 
     def test_transform_before_fit(self):
         imputer = KNNImputer()
@@ -152,10 +142,7 @@ class TestKNNImputer(unittest.TestCase):
         self.assertEqual(id(X), X_id)
 
     def test_no_valid_neighbors(self):
-        X = np.array([
-            [np.nan, 1],
-            [np.nan, 2]
-        ])
+        X = np.array([[np.nan, 1], [np.nan, 2]])
 
         imputer = KNNImputer()
         X_t = imputer.fit_transform(X)
