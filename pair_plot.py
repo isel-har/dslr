@@ -21,7 +21,8 @@ def preprocess(dataset:pd.DataFrame):
 # Load your data
 def main():
 
-    if len(sys.argv) != 2: return
+    if len(sys.argv) != 2:
+        return
     try:
         df = pd.read_csv(sys.argv[1])
         proc_df = preprocess(df)
@@ -32,12 +33,13 @@ def main():
             markers=".",
             # height=2,
             corner=True,
-            height=2.5
+            height=2.5,
         )
         # # g.fig.subplots_adjust(bottom=0.05)  # increase to make more space for x labels
         plt.show()
     except Exception as e:
         print("exception:", str(e))
+
 
 if __name__ == "__main__":
     main()

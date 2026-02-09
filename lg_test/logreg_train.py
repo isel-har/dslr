@@ -19,7 +19,7 @@ def main():
     transformed_y = le.fit_transform(df["Hogwarts House"])
 
     # Keep only numeric columns
-    X = df.select_dtypes(include='number').drop(columns=["Index"], errors="ignore")
+    X = df.select_dtypes(include="number").drop(columns=["Index"], errors="ignore")
 
     # Drop highly correlated features
     corr = X.corr().abs()
@@ -45,13 +45,12 @@ def main():
 
     ym_pred = model.predict(X)
 
-
     # y_true = None
     # if "Hogwarts House" in df.columns:
     #     y_true = le.transform(df["Hogwarts House"])
     #  🔟 Convert numeric predictions back to original labels
     # house_predictions = le.inverse_transform(y_pred)
-    
+
     # house_pred = le.inverse_transform(y_pred)
 
     # ✅ If true labels exist, evaluate accuracy
@@ -65,7 +64,6 @@ def main():
     # else:
     #     print("\n⚠️ No true labels found in test CSV — skipping accuracy evaluation.")
     # Print or save predictions
-    
 
     # # Save all parameters to JSON
     # try:
@@ -76,6 +74,7 @@ def main():
     #     print("❌ Error writing file:", str(e))
     # except Exception as e:
     #     print("❌ Unexpected error:", str(e))
+
 
 if __name__ == "__main__":
     main()
