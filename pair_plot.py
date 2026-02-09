@@ -3,6 +3,20 @@ import seaborn as sns
 import pandas as pd
 import sys
 
+def preprocess(dataset:pd.DataFrame):
+
+    selected_cols = dataset.select_dtypes(include='number').columns.to_list()
+
+    selected_cols.remove('Index')
+    selected_cols.remove("Defense Against the Dark Arts")
+    selected_cols.remove("Arithmancy")
+    selected_cols.remove("Care of Magical Creatures")
+    selected_cols.append("Hogwarts House")
+
+    dataset = dataset[selected_cols]
+    dataset = dataset.dropna()
+    return dataset
+
 
 # Load your data
 def main():
@@ -11,17 +25,17 @@ def main():
         return
     try:
         df = pd.read_csv(sys.argv[1])
-
-        numeric_columns = df.select_dtypes(include="number").columns.to_list()
+        proc_df = preprocess(df)
         g = sns.pairplot(
-            df,
-            vars=numeric_columns,  # ['Charms', 'Flying'],
-            hue="Hogwarts House",
-            diag_kind="hist",
+            proc_df,
+            hue='Hogwarts House',
+            diag_kind='hist',
+            markers=".",
+            # height=2,
             corner=True,
             height=2.5,
         )
-        g.fig.subplots_adjust(bottom=0.05)  # increase to make more space for x labels
+        # # g.fig.subplots_adjust(bottom=0.05)  # increase to make more space for x labels
         plt.show()
     except Exception as e:
         print("exception:", str(e))
