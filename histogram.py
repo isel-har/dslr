@@ -1,8 +1,7 @@
-from utils.sfs import mean_series
+from utils.sfs import max_series, min_series,  mean_series#, variance_series
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
-
 
 def main():
     if len(sys.argv) != 2:
@@ -10,20 +9,19 @@ def main():
 
     try:
         df = pd.read_csv(sys.argv[1])
-
-        numeric_cols = df.select_dtypes(include="number").columns
+        df = df.drop(columns='Index')
+        numeric_cols = df.select_dtypes(include='number').columns
         groups = df.groupby("Hogwarts House")[numeric_cols].agg(mean_series)
-
-        # print(groups)
 
         diff = float("inf")
         best_course = None
 
         for course in groups.columns:
-            d = groups[course].max() - groups[course].min()
+            d = max_series(groups[course]) - min_series(groups[course])
             if d < diff:
                 diff = d
                 best_course = course
+        
 
         plt.figure(figsize=(8, 5))
         plt.bar(groups.index, groups[best_course])
@@ -33,7 +31,5 @@ def main():
         plt.show()
     except Exception as e:
         print("exception:", str(e))
-
-
 if __name__ == "__main__":
     main()

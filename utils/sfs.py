@@ -14,7 +14,7 @@ def count_(df: pd.DataFrame):
 
 def not_nan_values(
     series: pd.Series,
-):  ## pandas series with unique indexes with column = name
+):
 
     valid_values = [x for x in series if not math.isnan(x)]
     return valid_values
@@ -99,8 +99,21 @@ def mean_series(series: pd.Series):
     return sum(values) / len(values)
 
 
+def max_series(series: pd.Series):
+    
+    values = not_nan_values(series)
+    return max(values)
+
+
+def min_series(series: pd.Series):
+    values = not_nan_values(series)
+    return min(values)
+
 def variance_series(series):
     values = not_nan_values(series)
+    mean_val = mean_series(series)
+    values_sq = [(v - mean_val)**2 for v in values]
+    return sum(values_sq) / len(values)
 
 
 def variance_(df: pd.DataFrame):
@@ -108,28 +121,19 @@ def variance_(df: pd.DataFrame):
     return std_series**2
 
 
-def mode_(df: pd.DataFrame):
-
-    modes = []
-    for c in df.columns:
-        valid = not_nan_values(df[c])
-
-        pass
-
 
 def correlation_(x, y):
-    # Compute means
+
     x_h = mean_series(x)
     y_h = mean_series(y)
 
-    # Numerator: sum of products of deviations
     num = sum(
         (a - x_h) * (b - y_h)
         for a, b in zip(x, y)
         if not math.isnan(a) and not math.isnan(b)
     )
 
-    # Denominator: product of standard deviations (not means)
+
     x_denom = sum((a - x_h) ** 2 for a in x if not math.isnan(a))
     y_denom = sum((b - y_h) ** 2 for b in y if not math.isnan(b))
 
