@@ -6,7 +6,6 @@
 - *Imputers*
   - [x] SimpleImputer
   - [x] KNNImputer
-  - [ ] some other imputer? (univariate)
   - [x] Tests
 
 - *Scalers*
@@ -16,21 +15,19 @@
   - [x] Tests
 
 - *Logistic regression*
-  - [ ] LogisticRegression
-  - [ ] SGD - MBGD
-  - [ ] L1 - L2 regularization
-  - [ ] Optimizations: adam, RMSProp, Momentum
-  - [ ] early stoping
-  - [ ] Tests
+  - [x] LogisticRegression
+  - [x] SGD - MBGD
+  - [x] L1 - L2 regularization
+  - [x] Optimizations: adam, RMSProp, Momentum
+  - [x] early stoping
 
 - *Classifier*
-  - [ ] OneVsRestClassifier
-  - [ ] Tests
+  - [x] OneVsRestClassifier
 
 - Misc
+  - [x] _np_max,_np_mean, _np_median, np_min, _np_percentile, _np_std, _np_unique.
   - [x] add a linter/formater (ruff)
-  - [ ] Pralell execuution of each classifier
-  - [ ] training animation: plot for each class (loss per epoch) in real time ?
+  - [x] Pralell execuution of each classifier
 
 ## Resources
 - [what is Exploratory Data Analysis - IBM](https://www.youtube.com/watch?v=QiqZliDXCCg)
