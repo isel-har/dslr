@@ -1,5 +1,15 @@
 import numpy as np
 
+from utils.utils import (
+    _np_max,
+    _np_mean,
+    _np_median,
+    _np_min,
+    _np_percentile,
+    _np_std,
+    _np_unique,
+)
+
 
 class SimpleImputer:
     """Replace missing values (np.nan) using simple strategies.
@@ -45,13 +55,13 @@ class SimpleImputer:
                 continue
 
             if self.strategy == "mean":
-                self.statistics_[col] = np.mean(non_missing)
+                self.statistics_[col] = _np_mean(non_missing)
 
             elif self.strategy == "median":
-                self.statistics_[col] = np.median(non_missing)
+                self.statistics_[col] = _np_median(non_missing)
 
             elif self.strategy == "most_frequent":
-                uniques, counts = np.unique(non_missing, return_counts=True)
+                uniques, counts = _np_unique(non_missing, return_counts=True)
                 self.statistics_[col] = uniques[np.argmax(counts)]
 
             elif self.strategy == "constant":
@@ -131,7 +141,7 @@ class KNNImputer:
                 values = np.array([v for _, v in k_nearest])
 
                 if self.weights == "uniform":
-                    X[i, col] = np.mean(values)
+                    X[i, col] = _np_mean(values)
 
                 elif self.weights == "distance":
                     w = 1 / (distances + 1e-8)

@@ -1,7 +1,8 @@
 from utils.sfs import max_series, min_series,  mean_series#, variance_series
 import matplotlib.pyplot as plt
 import pandas as pd
-import sys
+
+from utils.sfs import mean_series
 
 def main():
     if len(sys.argv) != 2:

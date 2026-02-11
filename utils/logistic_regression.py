@@ -1,4 +1,5 @@
 import pickle
+
 import numpy as np
 
 
@@ -16,7 +17,7 @@ class LogisticRegression:
         random_seed: int = 42, random seed to initialize the weights matrix.
         patience: int = 10, defines how many epochs to keep training when the loss stops decreasing.
         C: float = 1., the inverse of the regularization strenght.
-        tol: float = 1e-7, 
+        tol: float = 1e-7,
         verbose: bool = False, if `True` training progress printed to stdout.
         epsilon: float = 1e-9, very small value used to prevent dividing by 0 .
 
@@ -44,8 +45,10 @@ class LogisticRegression:
         epsilon=1e-9,
     ):
 
-        assert penalty in ("l1" , "l2", None), f"unknown penalty: {penalty}"
-        assert optimizer in ("adam" , "momentum", "rmsprop", None), f"unknown optimizer: {optimizer}"
+        assert penalty in ("l1", "l2", None), f"unknown penalty: {penalty}"
+        assert optimizer in ("adam", "momentum", "rmsprop", None), (
+            f"unknown optimizer: {optimizer}"
+        )
 
         self.lr = lr
         self.n_iters = n_iters
@@ -66,7 +69,6 @@ class LogisticRegression:
 
         self.v = None
         self.s = None
-
 
     def _sigmoid(self, z):
         return 1 / (1 + np.exp(-z))

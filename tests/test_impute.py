@@ -1,6 +1,8 @@
 import unittest
+
 import numpy as np
-from utils.impute import SimpleImputer, KNNImputer
+
+from utils.impute import KNNImputer, SimpleImputer
 
 
 class TestSimpleImputer(unittest.TestCase):

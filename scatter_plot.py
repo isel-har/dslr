@@ -1,7 +1,9 @@
-import matplotlib.pyplot as plt
-from utils.sfs import correlation_
-import pandas as pd
 import sys
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+from utils.sfs import correlation_
 
 
 def main():

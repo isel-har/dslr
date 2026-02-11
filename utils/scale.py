@@ -1,4 +1,13 @@
 import numpy as np
+from utils.utils import (
+    _np_max,
+    _np_mean,
+    _np_median,
+    _np_min,
+    _np_percentile,
+    _np_std,
+    _np_unique,
+)
 
 
 class MinMaxScaler:
@@ -10,8 +19,8 @@ class MinMaxScaler:
 
     def fit(self, X):
         X = np.asarray(X)
-        self.data_min_ = X.min(axis=0)
-        self.data_max_ = X.max(axis=0)
+        self.data_min_ = _np_min(X, axis=0)
+        self.data_max_ = _np_max(X, axis=0)
         self.data_range_ = self.data_max_ - self.data_min_
         return self
 
@@ -38,8 +47,8 @@ class StandardScaler:
 
     def fit(self, X):
         X = np.asarray(X)
-        self.mean_ = X.mean(axis=0) if self.with_mean else None
-        self.scale_ = X.std(axis=0) if self.with_std else None
+        self.mean_ = _np_mean(X, axis=0) if self.with_mean else None
+        self.scale_ = _np_std(X, axis=0) if self.with_std else None
         return self
 
     def transform(self, X):
@@ -78,9 +87,9 @@ class RobustScaler:
     def fit(self, X):
         X = np.asarray(X)
         q_min, q_max = self.quantile_range
-        self.center_ = np.median(X, axis=0) if self.with_centering else None
-        q_low = np.percentile(X, q_min, axis=0)
-        q_high = np.percentile(X, q_max, axis=0)
+        self.center_ = _np_median(X, axis=0) if self.with_centering else None
+        q_low = _np_percentile(X, q_min, axis=0)
+        q_high = _np_percentile(X, q_max, axis=0)
         self.scale_ = q_high - q_low if self.with_scaling else None
         return self
 
