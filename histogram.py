@@ -1,7 +1,9 @@
-from utils.sfs import mean_series
+import sys
+
 import matplotlib.pyplot as plt
 import pandas as pd
-import sys
+
+from utils.sfs import mean_series
 
 
 def main():

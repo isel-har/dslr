@@ -1,5 +1,7 @@
 import unittest
+
 import numpy as np
+
 from utils.scale import MinMaxScaler, RobustScaler, StandardScaler
 
 

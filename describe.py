@@ -1,8 +1,10 @@
 # from utils.csvt import CSVAnalyzer
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import utils.sfs as usfs
 import sys
+
 import pandas as pd
+
+import utils.sfs as usfs
 
 
 def main():
