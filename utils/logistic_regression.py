@@ -71,6 +71,7 @@ class LogisticRegression:
         self.s = None
 
     def _sigmoid(self, z):
+        z = np.clip(z, -500, 500)
         return 1 / (1 + np.exp(-z))
 
     def _add_bias(self, X):
@@ -140,6 +141,7 @@ class LogisticRegression:
 
         best_loss = np.inf
         wait = 0
+        self.losses_ = []
 
         for epoch in range(1, self.n_iters + 1):
             if self.batch_size is None:
@@ -156,6 +158,7 @@ class LogisticRegression:
 
             self._update_weights(dw, epoch)
 
+            self.losses_.append(loss)
             if self.early_stopping:
                 if best_loss - loss > self.tol:
                     best_loss = loss

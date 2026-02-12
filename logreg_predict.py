@@ -3,44 +3,61 @@ import json
 import sys
 
 import numpy as np
+import pandas as pd
 
+from utils.impute import KNNImputer, SimpleImputer
 from utils.logistic_regression import LogisticRegression
 from utils.one_vs_rest_classifier import OneVsRestClassifier
-from utils.scale import MinMaxScaler
+from utils.scale import MinMaxScaler, StandardScaler
+from utils.utils import DataFileAction
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog=sys.argv[0], usage="python %(prog)s [weights file] [dataset file]"
-    )
+    parser = argparse.ArgumentParser()
     parser.add_argument(
-        "weights_file",
-        nargs=1,
-        type=argparse.FileType("r"),
+        "--weights",
+        dest="weights_file",
         help="the models weights file.",
+        required=True,
+        action=DataFileAction,
     )
     parser.add_argument(
-        "dataset_file", nargs=1, type=argparse.FileType("r"), help="the dataset file."
+        "--data",
+        dest="test_dataset_file",
+        help="the dataset file.",
+        required=True,
+        action=DataFileAction,
     )
     args = parser.parse_args()
-
-    with open(args.weights_file[0].name) as wf:
+    print(args)
+    with open(args.weights_file) as wf:
         artifact = json.load(wf)
 
-    with open(args.dataset_file[0].name) as df:
-        test_dataset = None  # use pandas to load dataset?
+    useless_cols = [
+        "Index",
+        "Hogwarts House",
+        "First Name",
+        "Last Name",
+        "Birthday",
+        "Best Hand",
+        "Arithmancy",
+        "Defense Against the Dark Arts",
+        "Care of Magical Creatures",
+    ]
+    X = pd.read_csv(args.test_dataset_file).drop(columns=useless_cols).to_numpy()
 
-    X = test_dataset.tonumpy()  # TODO slice it?
-    scaler = MinMaxScaler()
-    scaler.data_min_ = np.array(
-        artifact["scaler"]["min"]
-    )  # TODO add set_params to all scalers
-    scaler.data_max_ = np.array(artifact["scaler"]["max"])
+    imputer = SimpleImputer(strategy="mean")
+    imputer.statistics_ = np.array(artifact["imputer"]["statistics"])
+    X = imputer.transform(X)
+
+    scaler = StandardScaler()
+    scaler.mean_ = np.array(artifact["scaler"]["mean"])
+    scaler.scale_ = np.array(artifact["scaler"]["scale"])
 
     estimators = []
     for cls in artifact["classes"]:
         lr = LogisticRegression()
         w = artifact["weights"][str(cls)]
-        lr.W = np.array(w["W"])  # TODO add sample_weights initializer to the LR model
+        lr.W = np.array(w["W"])
         estimators.append(lr)
 
     ovr = OneVsRestClassifier(None)
@@ -51,4 +68,4 @@ if __name__ == "__main__":
     with open("houses.csv", "w+") as pf:
         pf.write("Index,Hogwarts House\n")
         for i in range(0, len(y_pred)):
-            f.write(f"{i},{y_pred[i]}\n")
+            pf.write(f"{i},{y_pred[i]}\n")

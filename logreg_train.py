@@ -1,70 +1,144 @@
 import argparse
 import json
+import os
+import pathlib
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score
 
 from utils.impute import KNNImputer, SimpleImputer
 from utils.logistic_regression import LogisticRegression
 from utils.one_vs_rest_classifier import OneVsRestClassifier
 from utils.scale import MinMaxScaler, RobustScaler, StandardScaler
-from utils.utils import train_test_split
+from utils.utils import (
+    DataFileAction,
+    PositiveFloatAction,
+    PositiveIntAction,
+    train_test_split,
+)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog=sys.argv[0], usage="python %(prog)s [train dataset file]"
+    parser = argparse.ArgumentParser()
+    parser.suggest_on_error = True
+    parser.add_argument(
+        "train_dataset_file",
+        type=pathlib.Path,
+        help="the dataset file.",
+        action=DataFileAction,
+    )
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument(
+        "-p",
+        "--plot",
+        help="display the loss plot for each model after training",
+        action="store_true",
     )
     parser.add_argument(
-        "test_dataset_file",
-        nargs=1,
-        type=argparse.FileType(
-            "r"
-        ),  # this shit keeps the file open btw, so avoid it or close after reading in a try/catch
-        help="the dataset file.",
+        "-e",
+        "--early-stop",
+        help="stop training when the loss stops decreasing",
+        action="store_true",
     )
+    parser.add_argument(
+        "--lr",
+        help="(default=%(default)s) learning rate: model step size in gradient descent (be careful, a large learning rate will prevent convergenece !)",
+        type=float,
+        default=0.01,
+        action=PositiveFloatAction,
+    )
+
+    parser.add_argument(
+        "--penalty",
+        help="(default=%(default)s) regularization method for model params",
+        choices=["l1", "l2"],
+        default=None,
+    )
+    parser.add_argument(
+        "--optimizer",
+        help="(default=%(default)s) gradient descent optimizer",
+        choices=["adam", "rmsprop", "momentum"],
+        default=None,
+    )
+    parser.add_argument(
+        "--niters",
+        help="(default=%(default)s) number of training iterations",
+        type=int,
+        default=int(1000),
+        action=PositiveIntAction,
+    )
+    parser.add_argument(
+        "--batch-size",
+        help="(default=%(default)s) batch size for mini-batch and stochastic gradient descent, if None the whole training set is used",
+        choices=[16, 32, 64, 128],
+        default=None,
+    )
+
     args = parser.parse_args()
 
-    test_dataset = pd.read_csv(args.test_dataset_file[0].name).to_numpy()
-    X, y = test_dataset[:, 6:], test_dataset[:, 1:2].flatten()
-    imputer = KNNImputer().fit(X)
+    useless_cols = [
+        "Index",
+        "First Name",
+        "Last Name",
+        "Birthday",
+        "Best Hand",
+        "Arithmancy",
+        "Defense Against the Dark Arts",
+        "Care of Magical Creatures",
+    ]
+
+    test_dataset = (
+        pd.read_csv(args.train_dataset_file).drop(columns=useless_cols).to_numpy()
+    )
+    X, y = test_dataset[:, 1:], test_dataset[:, 0:1].flatten()
+
+    imputer = SimpleImputer(strategy="mean").fit(X)
     X = imputer.transform(X)
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
-    print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
 
-    scaler = StandardScaler().fit(X_train)
-    X_train = scaler.transform(X_train)
-    X_test = scaler.transform(X_test)
+    scaler = StandardScaler().fit(X)
+    X = scaler.transform(X)
+
     model = LogisticRegression(
-        penalty="l2", batch_size=64, optimizer=None, verbose=True, early_stopping=True
+        lr=args.lr,
+        penalty=args.penalty,
+        batch_size=args.batch_size,
+        optimizer=args.optimizer,
+        verbose=args.verbose,
+        early_stopping=args.early_stop,
+        n_iters=args.niters,
     )
-    ovr = OneVsRestClassifier(model, n_jobs=4)
-    ovr.fit(X_train, y_train)
+    ovr = OneVsRestClassifier(model, n_jobs=4, verbose=args.verbose)
+    ovr.fit(X, y)
 
-    print(
-        "train Accuracy: {} %".format(
-            accuracy_score(y_train, ovr.predict(X_train)) * 100
-        )
-    )
-    print(
-        "test Accuracy:  {} %".format(accuracy_score(y_test, ovr.predict(X_test)) * 100)
-    )
+    artifact = {
+        "imputer": {"statistics": imputer.statistics_.tolist()},
+        "scaler": {
+            "mean": scaler.mean_.tolist(),
+            "scale": scaler.scale_.tolist(),
+        },
+        "classes": ovr.classes_.tolist(),
+        "weights": {},
+    }
 
-    # artifact = {
-    #     "scaler": {
-    #         "min": scaler.data_min_.tolist(),
-    #         "max": scaler.data_max_.tolist(),
-    #     },
-    #     "classes": ovr.classes_.tolist(),
-    #     "weights": {},
-    # }
+    for cls, estimator in zip(ovr.classes_, ovr.estimators_):
+        artifact["weights"][str(cls)] = {
+            "W": estimator.W.tolist(),
+        }
 
-    # for cls, estimator in zip(ovr.classes_, ovr.estimators_):
-    #     artifact["weights"][str(cls)] = {
-    #         "W": estimator.W.tolist(),
-    #     }
+    with open("models/weights.json", "w") as f:
+        json.dump(artifact, f, indent=2)
 
-    # with open("models/weights.json", "w") as f:
-    #     json.dump(artifact, f, indent=2)
+    if args.plot:
+        import matplotlib.pyplot as plt
+
+        losses = ovr.get_models_losses()
+        fig, axs = plt.subplots(nrows=4, ncols=1, layout="constrained")
+        for k in losses.keys():
+            axs[k].plot(list(range(len(losses[k]))), losses[k])
+            axs[k].set_xlabel("Epochs")
+            axs[k].set_ylabel("Loss")
+            axs[k].set_title(f"Model {k}")
+            axs[k].grid(True)
+        plt.show()

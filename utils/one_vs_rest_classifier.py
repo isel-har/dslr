@@ -47,6 +47,9 @@ class OneVsRestClassifier:
 
         return self
 
+    def get_models_losses(self):
+        return {i: est.losses_ for i, est in enumerate(self.estimators_)}
+
     def predict_proba(self, X):
         if not hasattr(self, "estimators_"):
             raise RuntimeError("You must call fit() before predict_proba()")

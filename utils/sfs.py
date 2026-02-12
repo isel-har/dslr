@@ -101,7 +101,7 @@ def mean_series(series: pd.Series):
 
 
 def max_series(series: pd.Series):
-    
+
     values = not_nan_values(series)
     return max(values)
 
@@ -110,17 +110,17 @@ def min_series(series: pd.Series):
     values = not_nan_values(series)
     return min(values)
 
+
 def variance_series(series):
     values = not_nan_values(series)
     mean_val = mean_series(series)
-    values_sq = [(v - mean_val)**2 for v in values]
+    values_sq = [(v - mean_val) ** 2 for v in values]
     return sum(values_sq) / len(values)
 
 
 def variance_(df: pd.DataFrame):
     std_series = std_(df)
     return std_series**2
-
 
 
 def correlation_(x, y):
@@ -133,7 +133,6 @@ def correlation_(x, y):
         for a, b in zip(x, y)
         if not math.isnan(a) and not math.isnan(b)
     )
-
 
     x_denom = sum((a - x_h) ** 2 for a in x if not math.isnan(a))
     y_denom = sum((b - y_h) ** 2 for b in y if not math.isnan(b))

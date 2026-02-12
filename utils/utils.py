@@ -1,3 +1,7 @@
+import argparse
+import os
+import pathlib
+
 import numpy as np
 
 
@@ -234,3 +238,45 @@ def _np_unique(a, return_counts=False):
         return unique_vals, counts
 
     return unique_vals
+
+
+class DataFileAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        path = pathlib.Path(values)
+
+        if not path.exists():
+            parser.error(f"{values} does not exist.")
+
+        if not path.is_file():
+            parser.error(f"{values} is not a file.")
+
+        if not os.access(path, os.R_OK):
+            parser.error(f"{values} is not readable.")
+
+        setattr(namespace, self.dest, path)
+
+
+class PositiveIntAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        try:
+            value = int(values)
+        except ValueError:
+            parser.error(f"{option_string} must be an integer.")
+
+        if value <= 0:
+            parser.error(f"{option_string} must be a positive integer.")
+
+        setattr(namespace, self.dest, value)
+
+
+class PositiveFloatAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        try:
+            value = float(values)
+        except ValueError:
+            parser.error(f"{option_string} must be a float.")
+
+        if value <= 0:
+            parser.error(f"{option_string} must be a positive float.")
+
+        setattr(namespace, self.dest, value)
