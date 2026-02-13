@@ -3,6 +3,7 @@ import json
 import os
 import pathlib
 import sys
+import joblib
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -73,6 +74,7 @@ if __name__ == "__main__":
         "--batch-size",
         help="(default=%(default)s) batch size for mini-batch and stochastic gradient descent, if None the whole training set is used",
         choices=[16, 32, 64, 128],
+        type=int,
         default=None,
     )
 
@@ -122,13 +124,9 @@ if __name__ == "__main__":
         "weights": {},
     }
 
-    for cls, estimator in zip(ovr.classes_, ovr.estimators_):
-        artifact["weights"][str(cls)] = {
-            "W": estimator.W.tolist(),
-        }
+    model = {"imputer": imputer, "scaler": scaler, "ovr": ovr}
 
-    with open("models/weights.json", "w") as f:
-        json.dump(artifact, f, indent=2)
+    joblib.dump(model, "model.pkl")
 
     if args.plot:
         import matplotlib.pyplot as plt

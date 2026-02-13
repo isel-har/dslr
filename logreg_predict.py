@@ -1,10 +1,10 @@
 import argparse
 import json
 import sys
-
+import joblib
 import numpy as np
 import pandas as pd
-
+import pathlib
 from utils.impute import KNNImputer, SimpleImputer
 from utils.logistic_regression import LogisticRegression
 from utils.one_vs_rest_classifier import OneVsRestClassifier
@@ -13,24 +13,28 @@ from utils.utils import DataFileAction
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+
     parser.add_argument(
-        "--weights",
-        dest="weights_file",
-        help="the models weights file.",
-        required=True,
+        "--model",
+        dest="model_file",
+        help="the model file.",
         action=DataFileAction,
     )
+
     parser.add_argument(
-        "--data",
-        dest="test_dataset_file",
+        "test_dataset_file",
+        type=pathlib.Path,
         help="the dataset file.",
-        required=True,
         action=DataFileAction,
     )
+
     args = parser.parse_args()
-    print(args)
-    with open(args.weights_file) as wf:
-        artifact = json.load(wf)
+
+    model = joblib.load(args.model_file)
+
+    imputer = model["imputer"]
+    scaler = model["scaler"]
+    ovr = model["ovr"]
 
     useless_cols = [
         "Index",
@@ -43,26 +47,11 @@ if __name__ == "__main__":
         "Defense Against the Dark Arts",
         "Care of Magical Creatures",
     ]
+
     X = pd.read_csv(args.test_dataset_file).drop(columns=useless_cols).to_numpy()
 
-    imputer = SimpleImputer(strategy="mean")
-    imputer.statistics_ = np.array(artifact["imputer"]["statistics"])
     X = imputer.transform(X)
-
-    scaler = StandardScaler()
-    scaler.mean_ = np.array(artifact["scaler"]["mean"])
-    scaler.scale_ = np.array(artifact["scaler"]["scale"])
-
-    estimators = []
-    for cls in artifact["classes"]:
-        lr = LogisticRegression()
-        w = artifact["weights"][str(cls)]
-        lr.W = np.array(w["W"])
-        estimators.append(lr)
-
-    ovr = OneVsRestClassifier(None)
-    ovr.estimators_ = estimators
-    ovr.classes_ = np.array(artifact["classes"])
+    X = scaler.transform(X)
     y_pred = ovr.predict(X)
 
     with open("houses.csv", "w+") as pf:
